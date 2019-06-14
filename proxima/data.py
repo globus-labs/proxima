@@ -3,12 +3,18 @@
 from typing import Tuple, List, Iterator
 from random import shuffle
 
+
 class BaseDataSource:
     """Abstract class for managing training data"""
 
     def add_pair(self, inputs, outputs):
         """Add input/output pair to data store"""
         raise NotImplementedError
+
+    def add_pairs(self, inputs, outputs):
+        """Add many inputs and outputs"""
+        for i, o in zip(inputs, outputs):
+            self.add_pair(i, o)
 
     def get_all_data(self) -> Tuple[List, List]:
         """Get all of the training data
@@ -44,6 +50,10 @@ class InMemoryDataStorage(BaseDataSource):
     def add_pair(self, inputs, outputs):
         self.inputs.append(inputs)
         self.outputs.append(outputs)
+
+    def add_pairs(self, inputs, outputs):
+        self.inputs.extend(inputs)
+        self.outputs.extend(outputs)
 
     def get_all_data(self):
         return list(self.inputs), list(self.outputs)
