@@ -4,6 +4,7 @@ from proxima.data import BaseDataSource
 from proxima.inference import BaseInferenceEngine
 
 # TODO (wardlt): Be consistent about what I call the model/surrogate/LFA/learner
+#
 
 
 class TrainingEngine:
@@ -18,6 +19,11 @@ class TrainingEngine:
         Returns:
             (bool): Whether the model was updated
         """
-        X, y = data_source.get_all_data()
-        learner.retrain(X, y)
+        learner.retrain(data_source)
         return True
+
+
+class NeverRetrain(TrainingEngine):
+
+    def request_update(self, learner: BaseInferenceEngine, data_source: BaseDataSource):
+        return False
