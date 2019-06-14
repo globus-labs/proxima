@@ -1,0 +1,12 @@
+language: python
+python:
+- '3.6'
+cache: pip
+install:
+- pip install --only-binary=numpy,scipy -r requirements.txt
+- pip install coveralls flake8
+- pip install pytest pytest-cov --upgrade
+script:
+- flake8
+- pytest --show-capture stdout
+after_success: coveralls
