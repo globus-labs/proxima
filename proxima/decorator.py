@@ -16,7 +16,7 @@ from warnings import warn
 # TODO (wardlt): Add statistics class
 
 _perf_info = namedtuple('AccelStats', ['lfa_runs', 'lfa_time', 'uq_time', 'train_time',
-                                        'target_runs', 'target_time'])
+                                       'target_runs', 'target_time'])
 
 
 def lfa(inference_engine: BaseInferenceEngine, uq_engine: BaseUQEngine,
