@@ -5,6 +5,8 @@ from proxima.data import BaseDataSource
 # TODO (wardlt): Refactor so sklearn is not required
 from sklearn.base import BaseEstimator
 
+# TODO (wardlt): Figure out if this supports online training
+
 
 class BaseInferenceEngine:
     """Abstract interface to surrogate models
