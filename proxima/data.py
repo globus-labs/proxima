@@ -70,10 +70,9 @@ class InMemoryDataStorage(BaseDataSource):
             yield [self.inputs[i] for i in batch_inds], [self.outputs[i] for i in batch_inds]
 
 class SQLDataStorage(BaseDataSource):
-    """Store input/output pairs in memory without any persistence mechanism"""
+    """Store and interact with input/output pairs from a SQL database"""
 
     def __init__(self, url, table="data"):
-        # TODO (wardlt): Do we want to optimize for insertion or random access
         self.inputs = list()
         self.outputs = list()
         self.url = url  # sqlalchemy.engine.Engine or sqlite3.Connection
@@ -82,7 +81,7 @@ class SQLDataStorage(BaseDataSource):
                                     echo=False)
 
     def add_pair(self, inputs, outputs):
-        # Send to SQL
+        # Send a single pair set to SQL
         df = pd.DataFrame({"inputs": [inputs], "outputs": [outputs]})
         df.set_index('inputs', inplace=True)
         df.to_sql(self.table, con=self.engine, if_exists="append")
@@ -91,7 +90,7 @@ class SQLDataStorage(BaseDataSource):
         self.outputs.append(outputs)
 
     def add_pairs(self, inputs, outputs):
-        # Send to SQL
+        # Send a list of pair sets to SQL
         df = pd.DataFrame({"inputs": inputs, "outputs": outputs})
         df.set_index('inputs', inplace=True)
         df.to_sql(self.table, con=self.engine, if_exists="append")
