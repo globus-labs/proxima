@@ -73,6 +73,11 @@ class SQLDataStorage(BaseDataSource):
     """Store and interact with input/output pairs from a SQL database"""
 
     def __init__(self, url, table="data"):
+        """
+        Args:
+            url: (str) Database URL following RFC-1738
+            table: (str) Table in the database to use for storing data
+        """
         self.inputs = list()
         self.outputs = list()
         self.url = url  # sqlalchemy.engine.Engine or sqlite3.Connection
@@ -100,15 +105,25 @@ class SQLDataStorage(BaseDataSource):
 
     def get_all_data(self):
         q = "SELECT * FROM {table}".format(table=self.table)
-        return self.engine.execute(q).fetchall()
+        res = self.engine.execute(q).fetchall()
+        return list(zip(*res))
 
     def iterate_over_data(self, batch_size: int):
+        """Produce the training data as a generator
+
+        Args:
+            batch_size (int): Batch size
+        Yields:
+            Batches of input/output pairs of length batch_size
+        """
+
         res = True
         q = "SELECT * FROM {table}".format(table=self.table)
         r = self.engine.execute(q)
         while res:
             res = r.fetchmany(batch_size)
-            yield res
+            if res:
+                yield list(zip(*res))
 
     def clear_cache(self):
         self.inputs = []
