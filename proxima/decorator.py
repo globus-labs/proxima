@@ -69,6 +69,8 @@ class LFAEngine:
     def __call__(self, *args, **kwargs):
         # Make inputs from the position args only
         # TODO (lw): Replace with better strategy for going from args -> inputs
+        #  For example, do we need to support kwargs as well. Should we have a tool to convert
+        #   inputs into a more versatile representation?
         if len(kwargs) > 0:
             warn('Keyword arguments are currently being ignored')
         inputs = args
@@ -106,7 +108,7 @@ class LFAEngine:
                 self._train_time += perf_counter() - start_time
             return outputs
 
-    def get_performance_info(self):
+    def get_performance_info(self) -> _perf_info:
         """Get measurements of the performance of the LFA"""
         return _perf_info(self._lfa_runs, self._lfa_time, self._uq_time, self._train_time,
                           self._target_runs, self._target_time)

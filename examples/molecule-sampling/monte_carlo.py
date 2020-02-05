@@ -1,8 +1,11 @@
 """Simple Monte Carlo sampling application"""
-from mcdemo.utils import get_qm9_path
+from mcdemo.surrogates import CoulombMatrixKNNSurrogate, DistanceBasedUQWithFeaturization, ASEDataStore
+from mcdemo.utils import get_qm9_path, get_platform_info
 
 from ase.calculators.psi4 import Psi4
 from ase.io.xyz import read_xyz
+from proxima.decorator import LFAEngine
+from proxima.training import TrainingEngine
 from tqdm import tqdm
 
 from argparse import ArgumentParser
@@ -31,6 +34,9 @@ if __name__ == "__main__":
     run_params = args.__dict__
     kT = 3.1668115635e-6 * args.temp
 
+    # Get the system information
+    host_info = get_platform_info()
+
     # Set the random seed
     np.random.seed(args.random)
 
@@ -52,9 +58,17 @@ if __name__ == "__main__":
     # Save the parameters and host information
     with open(os.path.join(out_dir, 'run_params.json'), 'w') as fp:
         json.dump(run_params, fp, indent=2)
+    with open(os.path.join(out_dir, 'host_info.json'), 'w') as fp:
+        json.dump(host_info, fp, indent=2)
 
     # Initialize the ASE calculator
     calc = Psi4(atoms=atoms, method='b3lyp', memory='500MB', basis='6-311g_d_p_')
+
+    # Make the LFA wrapper
+    lfa_func = LFAEngine(calc.get_potential_energy, CoulombMatrixKNNSurrogate(),
+                         DistanceBasedUQWithFeaturization(0.1),
+                         ASEDataStore(), TrainingEngine())
+    calc.get_potential_energy = lfa_func
 
     # Compute a starting energy
     energy = calc.get_potential_energy(atoms)
@@ -83,3 +97,7 @@ if __name__ == "__main__":
             if accept:
                 energy = new_energy
                 atoms = new_atoms
+
+    # Drop out the LFA statistics
+    with open(os.path.join(out_dir, 'lfa_stats.json'), 'w') as fp:
+        json.dump(lfa_func.get_performance_info()._asdict(), fp, indent=2)

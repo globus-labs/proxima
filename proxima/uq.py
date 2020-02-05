@@ -7,6 +7,7 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 # TODO (wardlt): Provide some mechanism for checking if UQ tool needs to be updated
+#  Perhaps having the data store track the last time it was updated?
 
 
 class BaseUQEngine:

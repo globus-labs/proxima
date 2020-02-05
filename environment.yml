@@ -16,5 +16,6 @@ dependencies:
   - pip
   - pip:
       - matminer==0.6.2
+      - python-git-info
       - -e .
   
