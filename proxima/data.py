@@ -26,10 +26,18 @@ class BaseDataSource:
         """
         raise NotImplementedError
 
+    def count(self) -> int:
+        """Get the database size
+
+        Returns:
+             (int) Number of records
+        """
+        raise NotImplementedError
+
     def iterate_over_data(self, batch_size: int) -> Iterator[Tuple[List, List]]:
         """Produce the training data as a generator
 
-        # TODO (wardlt): Should we assert orderings be random? I think "yes"
+        # TODO (wardlt): Should we assert orderings be random? I think "yes," but implementing that could be difficult
 
         Args:
             batch_size (int): Batch size
@@ -46,6 +54,9 @@ class InMemoryDataStorage(BaseDataSource):
         # TODO (wardlt): Do we want to optimize for insertion or random access
         self.inputs = list()
         self.outputs = list()
+
+    def count(self) -> int:
+        return len(self.inputs)
 
     def add_pair(self, inputs, outputs):
         self.inputs.append(inputs)
