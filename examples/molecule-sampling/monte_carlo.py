@@ -1,5 +1,7 @@
 """Simple Monte Carlo sampling application"""
-from mcdemo.surrogates import CoulombMatrixKNNSurrogate, DistanceBasedUQWithFeaturization, ASEDataStore
+from mcdemo.lfa.surrogates import CoulombMatrixKNNSurrogate
+from mcdemo.lfa.uq import DistanceBasedUQWithFeaturization
+from mcdemo.lfa.data import ASEDataStore
 from mcdemo.utils import get_qm9_path, get_platform_info
 
 from ase.calculators.psi4 import Psi4

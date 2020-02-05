@@ -39,14 +39,19 @@ There are two ways to vary the problem size:
 molecule from the QM9 database is used for the simulation. There are
 133k molecules and they are roughly ordered by increasing molecular size.
 So, larger numbers in the ``--mol`` flag will lead to longer run times 
-2. _Adjusting the number of steps._ The ``--nsteps`` flag determines how many time the main loop is iterated through.
+2. _Adjusting the number of steps._ The ``--nsteps`` flag determines how many times 
+the main loop is iterated through.
 
 There are a few ways for adjusting the sensitivity to surrogate model errors:
 
-1. _Changing the temperature_. Logan's hypothesizes that lower temperatures will be 
-more sensitive to errors because the error variance will be lower.
+1. _Changing the temperature_. The ``--temp`` flag. Logan's hypothesizes that lower 
+temperatures will be more sensitive to errors because the error variance will be lower.
 2. _Changing the number of steps_. Logan also thinks that the impact of 
 approximation error will be smaller the more steps you average over.
+
+Ways to control how often the LFA is used:
+1. _Increasing the temperature_: (Indirect) Will cause perturbations to be accepted more often,
+leading to a greater drift in the molecule position.
 
 Logan intends the ability to add in control over the number of threads
 used by Psi4 as a simple way to control the runtime of the energy step.
@@ -60,8 +65,8 @@ The directories are named after the start time and contain several files:
 - `run_params.json`: A file with the configuration of the application
 - `run_data.csv`: Information from the trajectory, including the 
 measured energies and the runtime for each step.
-
-Logan intends to add some more output files that print out the system information
+- `host_info.json`: Information about what host was run on
+- `lfa_json.json`: Summary statistics of LFA performance
 
 ## Implementation Details
 
@@ -77,3 +82,5 @@ to put the code in devlopement mode and reduce the chance PYTHONPATH-related
 chaos. "Development mode" adds the library's current location to the Python path
 so that whenever you open a Python interpreter it will import the
 latest version of each file.
+
+The ``mcdemo`` package contains the LFA components specific to this application.
