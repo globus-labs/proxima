@@ -1,0 +1,20 @@
+name: proxima
+channels:
+  - defaults
+  - psi4
+  - conda-forge
+dependencies:
+  - python==3.6.*
+  - pymatgen==2020.1.28
+  - scikit-learn==0.21.3
+  - matplotlib>3
+  - ase==3.19.0
+  - jupyterlab
+  - pytest
+  - psi4
+  - tqdm
+  - pip
+  - pip:
+      - matminer==0.6.2
+      - -e .
+  
