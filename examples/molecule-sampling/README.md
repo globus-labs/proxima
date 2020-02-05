@@ -63,8 +63,12 @@ each time you invoke it.
 The directories are named after the start time and contain several files:
 
 - `run_params.json`: A file with the configuration of the application
-- `run_data.csv`: Information from the trajectory, including the 
-measured energies and the runtime for each step.
+- `run_data.csv`: Information from the trajectory, with columns:
+    - `step`: Step index
+    - `energy`: Energy of the current structure
+    - `new_energy`: Energy of the new structure
+    - `time`: Time step was completed
+    - `surrogate`: Whether the surrogate was used
 - `host_info.json`: Information about what host was run on
 - `lfa_json.json`: Summary statistics of LFA performance
 

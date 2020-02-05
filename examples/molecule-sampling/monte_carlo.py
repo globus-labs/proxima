@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     # Open an experiment directory
     start_time = datetime.utcnow()
-    out_dir = f'{start_time.strftime("%d%b%y-%H%M%S")}'
+    out_dir = os.path.join('runs', f'{start_time.strftime("%d%b%y-%H%M%S")}')
     os.makedirs(out_dir)
 
     # Save the parameters and host information
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     # Start the Monte Carlo loop
     with open(os.path.join(out_dir, 'run_data.csv'), 'w') as fp:
-        log_file = DictWriter(fp, fieldnames=['step', 'energy', 'new_energy', 'time', 'accept'])
+        log_file = DictWriter(fp, fieldnames=['step', 'energy', 'new_energy', 'time', 'accept', 'surrogate'])
         log_file.writeheader()
 
         for step in tqdm(range(args.nsteps)):
@@ -93,12 +93,15 @@ if __name__ == "__main__":
             prob = np.exp((new_energy - energy) / kT)
             accept = prob < np.random.rand()
 
-            # Store the results
-            log_file.writerow({'step': step, 'energy': energy, 'new_energy': new_energy,
-                               'accept': accept, 'time': perf_counter()})
+            # Act on decision
             if accept:
                 energy = new_energy
                 atoms = new_atoms
+
+            # Store the results
+            log_file.writerow({'step': step, 'energy': energy, 'new_energy': new_energy,
+                               'accept': accept, 'time': perf_counter(),
+                               'surrogate': lfa_func.did_last_call_use_surrogate()})
 
     # Drop out the LFA statistics
     with open(os.path.join(out_dir, 'lfa_stats.json'), 'w') as fp:

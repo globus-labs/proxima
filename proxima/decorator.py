@@ -64,6 +64,7 @@ class LFAEngine:
         self._lfa_runs = self._lfa_time = 0
         self._uq_time = self._train_time = 0
         self._target_runs = self._target_time = 0
+        self._used_surrogate = None
 
     # TODO (wardlt): Make a batch version (build batch versions into "Engines" first)
     def __call__(self, *args, **kwargs):
@@ -79,6 +80,9 @@ class LFAEngine:
         start_time = perf_counter()
         is_supported = self.uq_engine.is_supported(self.inference_engine, self.data_source, inputs)
         self._uq_time += perf_counter() - start_time
+
+        # Saved if the surrogate was used
+        self._used_surrogate = is_supported
 
         if is_supported:
             start_time = perf_counter()
@@ -107,6 +111,11 @@ class LFAEngine:
             finally:
                 self._train_time += perf_counter() - start_time
             return outputs
+
+    def did_last_call_use_surrogate(self) -> bool:
+        """Check if the last call used the surrogate"""
+        # TODO (wardlt): Should I have similar functions of other statistics of last call (e.g., runtimes)
+        return self._used_surrogate
 
     def get_performance_info(self) -> _perf_info:
         """Get measurements of the performance of the LFA"""
