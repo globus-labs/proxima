@@ -30,6 +30,7 @@ if __name__ == "__main__":
                                                  ' Default is 298 (room temperature)', default=298, type=float)
     arg_parser.add_argument('--nsteps', '-n', help='Number of Monte Carlo steps', default=64, type=int)
     arg_parser.add_argument('--random', '-S', help='Random seed', default=None, type=int)
+    arg_parser.add_argument('--perturb', '-p', help='Perturbation size', default=0.01, type=float)
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -41,6 +42,7 @@ if __name__ == "__main__":
 
     # Set the random seed
     np.random.seed(args.random)
+    rng = np.random.RandomState(args.random)
 
     # Download the QM9 dataset and get the molecule of interest
     qm9_path = get_qm9_path()
@@ -83,15 +85,16 @@ if __name__ == "__main__":
         for step in tqdm(range(args.nsteps)):
             # Make a copy of the structure with rattled positions
             new_atoms = atoms.copy()
-            new_atoms.rattle()
+            new_atoms.rattle(stdev=args.perturb, rng=rng)
 
             # Compute the energy
             calc.reset()
             new_energy = calc.get_potential_energy(new_atoms)
 
             # Determine whether we should accept this state
-            prob = np.exp((new_energy - energy) / kT)
-            accept = prob < np.random.rand()
+            delta_E = new_energy - energy
+            prob = np.exp(-delta_E / kT)
+            accept = rng.random() < prob
 
             # Act on decision
             if accept:

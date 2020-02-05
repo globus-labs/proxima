@@ -66,4 +66,4 @@ class DistanceBasedUQWithFeaturization(BaseUQEngine):
         strc = AseAtomsAdaptor.get_molecule(X[0])
         features = self.cm.transform([strc])
         dists, _ = nn.kneighbors(features)
-        return np.mean(dists, axis=1) < self.threshold
+        return np.mean(dists, axis=1)[0] < self.threshold

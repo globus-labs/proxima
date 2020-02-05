@@ -52,6 +52,8 @@ approximation error will be smaller the more steps you average over.
 Ways to control how often the LFA is used:
 1. _Increasing the temperature_: (Indirect) Will cause perturbations to be accepted more often,
 leading to a greater drift in the molecule position.
+1. _Increasing the perturbation size_: Use the ``--perturb`` flag to increase the amount
+the structure is changed at each step. Default is 0.01
 
 Logan intends the ability to add in control over the number of threads
 used by Psi4 as a simple way to control the runtime of the energy step.
