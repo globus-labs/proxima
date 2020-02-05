@@ -1,8 +1,9 @@
 """Simple Monte Carlo sampling application"""
+from mcdemo.utils import get_qm9_path
+
 from ase.calculators.psi4 import Psi4
 from ase.io.xyz import read_xyz
 from tqdm import tqdm
-import requests
 
 from argparse import ArgumentParser
 from datetime import datetime
@@ -14,25 +15,6 @@ import numpy as np
 import gzip
 import json
 import os
-
-
-_qm9_url = "https://github.com/globus-labs/g4mp2-atomization-energy/raw/master/data/output/g4mp2_data.json.gz"
-_qm9_path = os.path.join(os.path.dirname(__file__), 'data', 'qm9.json.gz')
-
-
-def _download_data():
-    """Download the QM9 data"""
-
-    # Make sure the data path is available for saving
-    data_dir = os.path.dirname(_qm9_path)
-    if not os.path.exists(data_dir):
-        os.makedirs(data_dir)
-
-    # Download and save the file
-    req = requests.get(_qm9_url, stream=True)
-    with open(_qm9_path, 'wb') as fp:
-        for chunk in req.iter_content(1024 ** 2):
-            fp.write(chunk)
 
 
 if __name__ == "__main__":
@@ -53,9 +35,8 @@ if __name__ == "__main__":
     np.random.seed(args.random)
 
     # Download the QM9 dataset and get the molecule of interest
-    if not os.path.isfile(_qm9_path):
-        _download_data()
-    with gzip.open(_qm9_path, 'rt') as fp:
+    qm9_path = get_qm9_path()
+    with gzip.open(qm9_path, 'rt') as fp:
         for _, d in zip(range(args.mol), fp):
             pass
         mol_info = json.loads(d)

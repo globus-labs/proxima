@@ -62,3 +62,18 @@ The directories are named after the start time and contain several files:
 measured energies and the runtime for each step.
 
 Logan intends to add some more output files that print out the system information
+
+## Implementation Details
+
+We use a few different open-source libraries to build this application
+and a custom ``mcdemo`` module to hold utility operations.
+
+The demo app relies heavily on the [`ase`](https://gitlab.com/ase/ase)
+module for running the physics portion of the codes.
+``ase`` interfaces with Psi4 and is used to manipulate the atomic structures.
+
+The ``mcdemo`` application should be installed with `pip install -e .`
+to put the code in devlopement mode and reduce the chance PYTHONPATH-related
+chaos. "Development mode" adds the library's current location to the Python path
+so that whenever you open a Python interpreter it will import the
+latest version of each file.
