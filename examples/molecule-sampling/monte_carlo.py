@@ -1,4 +1,5 @@
 """Simple Monte Carlo sampling application"""
+from ase import Atoms
 from mcdemo.lfa.surrogates import CoulombMatrixKNNSurrogate
 from mcdemo.lfa.uq import DistanceBasedUQWithFeaturization
 from mcdemo.lfa.data import ASEDataStore
@@ -6,6 +7,8 @@ from mcdemo.utils import get_qm9_path, get_platform_info
 
 from ase.calculators.psi4 import Psi4
 from ase.io.xyz import read_xyz
+from scipy.stats import bayes_mvs
+
 from proxima.decorator import LFAEngine
 from proxima.training import TrainingEngine
 from tqdm import tqdm
@@ -77,7 +80,19 @@ if __name__ == "__main__":
     # Compute a starting energy
     energy = calc.get_potential_energy(atoms)
 
+    # Function to compute the radius of gyration
+    def radius_of_gyration(atoms: Atoms):
+        """Compute the radius of gyration of a molecule
+
+        Method: http://www.charmm-gui.org/?doc=lecture&module=scientific&lesson=10
+        """
+        cm = atoms.get_center_of_mass()
+        disp = np.linalg.norm(atoms.get_positions() - cm, 2, axis=1)
+        m = atoms.get_masses()
+        return np.dot(m, disp) / np.sum(m)
+
     # Start the Monte Carlo loop
+    r_g = []
     with open(os.path.join(out_dir, 'run_data.csv'), 'w') as fp:
         log_file = DictWriter(fp, fieldnames=['step', 'energy', 'new_energy', 'true_new_energy',
                                               'time', 'accept', 'surrogate'])
@@ -106,6 +121,9 @@ if __name__ == "__main__":
                 energy = new_energy
                 atoms = new_atoms
 
+            # Compute the radius of gyration
+            r_g.append(radius_of_gyration(atoms))
+
             # Store the results
             log_file.writerow({'step': step, 'energy': energy, 'new_energy': new_energy,
                                'true_new_energy': true_new_energy,
@@ -115,3 +133,12 @@ if __name__ == "__main__":
     # Drop out the LFA statistics
     with open(os.path.join(out_dir, 'lfa_stats.json'), 'w') as fp:
         json.dump(lfa_func.get_performance_info()._asdict(), fp, indent=2)
+
+    # Print out the radius of gyration statistics on the last 50% of the steps
+    #  Note: One should really check for when the "burn in" period ends but accuracy isn't the point of this demo app
+    r_g = r_g[len(r_g) // 2:]
+    stats = bayes_mvs(r_g)
+    with open(os.path.join(out_dir, 'result.json'), 'w') as fp:
+        json.dump({
+            'r_g': stats[0]._asdict()
+        }, fp, indent=2)

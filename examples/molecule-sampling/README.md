@@ -46,8 +46,11 @@ There are a few ways for adjusting the sensitivity to surrogate model errors:
 
 1. _Changing the temperature_. The ``--temp`` flag. Logan's hypothesizes that lower 
 temperatures will be more sensitive to errors because the error variance will be lower.
-2. _Changing the number of steps_. Logan also thinks that the impact of 
+1. _Changing the number of steps_. Logan also thinks that the impact of 
 approximation error will be smaller the more steps you average over.
+1. _Increasing the molecule size_: Picking a larger number for `--mol` will get a larger
+molecule that may have a larger output, which might expose errors in the 
+surrogate more easily. 
 
 Ways to control how often the LFA is used:
 1. _Increasing the temperature_: (Indirect) Will cause perturbations to be accepted more often,
@@ -68,12 +71,15 @@ The directories are named after the start time and contain several files:
 - `run_data.csv`: Information from the trajectory, with columns:
     - `step`: Step index
     - `energy`: Energy of the current structure
-    - `new_energy`: Energy of the new structure
+    - `new_energy`: Energy of the new structure (could be surrogate or target function)
+    - `true_new_energy`: Energy computed using the target function
     - `time`: Time step was completed
     - `surrogate`: Whether the surrogate was used
 - `host_info.json`: Information about what host was run on
 - `lfa_json.json`: Summary statistics of LFA performance
-- `lfa.pkl`: The LFA code used for this run, to be inspected later
+- `result.json`: Output of the simulation code. Gives both the mean and 90%
+  confidence intervals of the property (radius of gyration) so that you 
+  can assess if differences are significant. 
 
 ## Implementation Details
 
