@@ -25,6 +25,14 @@ import json
 import os
 
 
+# Hard code the fidelity options
+_fidelity = {
+    'low': {'method': 'HF', 'basis': 'sto-3g'},
+    'medium': {'method': 'b3lyp', 'basis': '6-311g_d_p_'},
+    'high': {'method': 'ccsd(t)', 'basis': 'cc-pVTZ'}
+}
+
+
 if __name__ == "__main__":
     # Parse the arguments
     arg_parser = ArgumentParser()
@@ -33,7 +41,9 @@ if __name__ == "__main__":
                                                  ' Default is 298 (room temperature)', default=298, type=float)
     arg_parser.add_argument('--nsteps', '-n', help='Number of Monte Carlo steps', default=64, type=int)
     arg_parser.add_argument('--random', '-S', help='Random seed', default=None, type=int)
-    arg_parser.add_argument('--perturb', '-p', help='Perturbation size', default=0.01, type=float)
+    arg_parser.add_argument('--perturb', '-p', help='Perturbation size', default=0.001, type=float)
+    arg_parser.add_argument('--fidelity', '-f', help='Controls the accuracy/cost of the quantum chemistry code',
+                            default='high', choices=['low', 'medium', 'high'], type=str)
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -69,7 +79,7 @@ if __name__ == "__main__":
         json.dump(host_info, fp, indent=2)
 
     # Initialize the ASE calculator
-    calc = Psi4(atoms=atoms, method='hf', memory='500MB', basis='6-311g_d_p_')
+    calc = Psi4(atoms=atoms, memory='500MB', **_fidelity[args.fidelity])
 
     # Make the LFA wrapper
     lfa_func = LFAEngine(calc.get_potential_energy, CoulombMatrixKNNSurrogate(),

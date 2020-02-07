@@ -39,8 +39,10 @@ There are two ways to vary the problem size:
 molecule from the QM9 database is used for the simulation. There are
 133k molecules and they are roughly ordered by increasing molecular size.
 So, larger numbers in the ``--mol`` flag will lead to longer run times 
-2. _Adjusting the number of steps._ The ``--nsteps`` flag determines how many times 
+1. _Adjusting the number of steps._ The ``--nsteps`` flag determines how many times 
 the main loop is iterated through.
+1. _Adjusting fidelity_: The `--fidelity` flag controls how expensive of
+a quantum chemistry method is used.
 
 There are a few ways for adjusting the sensitivity to surrogate model errors:
 
