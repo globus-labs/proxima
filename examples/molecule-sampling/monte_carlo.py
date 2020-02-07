@@ -66,7 +66,7 @@ if __name__ == "__main__":
         json.dump(host_info, fp, indent=2)
 
     # Initialize the ASE calculator
-    calc = Psi4(atoms=atoms, method='b3lyp', memory='500MB', basis='6-311g_d_p_')
+    calc = Psi4(atoms=atoms, method='hf', memory='500MB', basis='6-311g_d_p_')
 
     # Make the LFA wrapper
     lfa_func = LFAEngine(calc.get_potential_energy, CoulombMatrixKNNSurrogate(),
@@ -79,7 +79,8 @@ if __name__ == "__main__":
 
     # Start the Monte Carlo loop
     with open(os.path.join(out_dir, 'run_data.csv'), 'w') as fp:
-        log_file = DictWriter(fp, fieldnames=['step', 'energy', 'new_energy', 'time', 'accept', 'surrogate'])
+        log_file = DictWriter(fp, fieldnames=['step', 'energy', 'new_energy', 'true_new_energy',
+                                              'time', 'accept', 'surrogate'])
         log_file.writeheader()
 
         for step in tqdm(range(args.nsteps)):
@@ -90,6 +91,10 @@ if __name__ == "__main__":
             # Compute the energy
             calc.reset()
             new_energy = calc.get_potential_energy(new_atoms)
+            if lfa_func.did_last_call_use_surrogate():
+                true_new_energy = lfa_func.target_function(new_atoms)
+            else:
+                true_new_energy = new_energy
 
             # Determine whether we should accept this state
             delta_E = new_energy - energy
@@ -103,6 +108,7 @@ if __name__ == "__main__":
 
             # Store the results
             log_file.writerow({'step': step, 'energy': energy, 'new_energy': new_energy,
+                               'true_new_energy': true_new_energy,
                                'accept': accept, 'time': perf_counter(),
                                'surrogate': lfa_func.did_last_call_use_surrogate()})
 

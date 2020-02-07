@@ -73,6 +73,7 @@ The directories are named after the start time and contain several files:
     - `surrogate`: Whether the surrogate was used
 - `host_info.json`: Information about what host was run on
 - `lfa_json.json`: Summary statistics of LFA performance
+- `lfa.pkl`: The LFA code used for this run, to be inspected later
 
 ## Implementation Details
 
