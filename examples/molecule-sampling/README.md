@@ -82,6 +82,8 @@ The directories are named after the start time and contain several files:
 - `result.json`: Output of the simulation code. Gives both the mean and 90%
   confidence intervals of the property (radius of gyration) so that you 
   can assess if differences are significant. 
+- `r_g.json`: Raw values of the radius of gyration. Useful if you want to do
+  analysis beyond the coarse statistics in `result.json`
 
 ## Implementation Details
 

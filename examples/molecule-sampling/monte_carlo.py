@@ -43,7 +43,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--random', '-S', help='Random seed', default=None, type=int)
     arg_parser.add_argument('--perturb', '-p', help='Perturbation size', default=0.001, type=float)
     arg_parser.add_argument('--fidelity', '-f', help='Controls the accuracy/cost of the quantum chemistry code',
-                            default='high', choices=['low', 'medium', 'high'], type=str)
+                            default='low', choices=['low', 'medium', 'high'], type=str)
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -147,8 +147,18 @@ if __name__ == "__main__":
     # Print out the radius of gyration statistics on the last 50% of the steps
     #  Note: One should really check for when the "burn in" period ends but accuracy isn't the point of this demo app
     r_g = r_g[len(r_g) // 2:]
-    stats = bayes_mvs(r_g)
-    with open(os.path.join(out_dir, 'result.json'), 'w') as fp:
-        json.dump({
-            'r_g': stats[0]._asdict()
-        }, fp, indent=2)
+    with open(os.path.join(out_dir, 'r_g.json'), 'w') as fp:
+        json.dump(r_g, fp)
+
+    if max(r_g) - min(r_g) < 1e-6:
+        # Special Case: The R_g does not change during the whole test
+        with open(os.path.join(out_dir, 'result.json'), 'w') as fp:
+            json.dump({
+                'r_g': {'statistic': r_g[0], 'minmax': [np.nan, np.nan]}
+            }, fp, indent=2)
+    else:
+        stats = bayes_mvs(r_g)
+        with open(os.path.join(out_dir, 'result.json'), 'w') as fp:
+            json.dump({
+                'r_g': stats[0]._asdict()
+            }, fp, indent=2)
