@@ -11,7 +11,7 @@ from sklearn.base import BaseEstimator
 class BaseInferenceEngine:
     """Abstract interface to surrogate models
 
-    Supplies both an inter
+    Supplies both an interface for making inferences and retraining the surrogate
 
     # TODO (wardlt): Move notes to sphinx docs
     Notes:

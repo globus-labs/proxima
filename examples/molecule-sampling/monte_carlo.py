@@ -1,6 +1,6 @@
 """Simple Monte Carlo sampling application"""
 from ase import Atoms
-from mcdemo.lfa.surrogates import CoulombMatrixKNNSurrogate
+from mcdemo.lfa.surrogates import CoulombMatrixKNNSurrogate, GAPSurrogate
 from mcdemo.lfa.uq import DistanceBasedUQWithFeaturization
 from mcdemo.lfa.data import ASEDataStore
 from mcdemo.utils import get_qm9_path, get_platform_info
@@ -44,6 +44,10 @@ if __name__ == "__main__":
     arg_parser.add_argument('--perturb', '-p', help='Perturbation size', default=0.001, type=float)
     arg_parser.add_argument('--fidelity', '-f', help='Controls the accuracy/cost of the quantum chemistry code',
                             default='low', choices=['low', 'medium', 'high'], type=str)
+    arg_parser.add_argument('--max-model-size', '-s', help='Maximum number of points to use in GAP surrogate model',
+                            default=None, type=int)
+    arg_parser.add_argument('--uq-tolerance', '-u', help='Larger tolerance values will use surrogates more often',
+                            default=0.1, type=float)
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -82,9 +86,9 @@ if __name__ == "__main__":
     calc = Psi4(atoms=atoms, memory='500MB', **_fidelity[args.fidelity])
 
     # Make the LFA wrapper
-    lfa_func = LFAEngine(calc.get_potential_energy, CoulombMatrixKNNSurrogate(),
-                         DistanceBasedUQWithFeaturization(0.1),
-                         ASEDataStore(), TrainingEngine())
+    lfa_func = LFAEngine(calc.get_potential_energy, GAPSurrogate(args.max_model_size),
+                         DistanceBasedUQWithFeaturization(args.uq_tolerance),
+                         ASEDataStore(convert_to_pmg=False), TrainingEngine())
     calc.get_potential_energy = lfa_func
 
     # Compute a starting energy
@@ -103,6 +107,7 @@ if __name__ == "__main__":
 
     # Start the Monte Carlo loop
     r_g = []
+    energies = []
     with open(os.path.join(out_dir, 'run_data.csv'), 'w') as fp:
         log_file = DictWriter(fp, fieldnames=['step', 'energy', 'new_energy', 'true_new_energy',
                                               'time', 'accept', 'surrogate'])
@@ -133,6 +138,9 @@ if __name__ == "__main__":
 
             # Compute the radius of gyration
             r_g.append(radius_of_gyration(atoms))
+
+            # Store the measured energy
+            energies.append(energy)
 
             # Store the results
             log_file.writerow({'step': step, 'energy': energy, 'new_energy': new_energy,

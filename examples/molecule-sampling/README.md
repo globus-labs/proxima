@@ -51,17 +51,25 @@ temperatures will be more sensitive to errors because the error variance will be
 1. _Changing the number of steps_. Logan also thinks that the impact of 
 approximation error will be smaller the more steps you average over.
 1. _Increasing the molecule size_: Picking a larger number for `--mol` will get a larger
-molecule that may have a larger output, which might expose errors in the 
+molecule will have a larger $R_g$, which might expose errors in the 
 surrogate more easily. 
 
 Ways to control how often the LFA is used:
+1. _Increasing the UQ tolerance_: Larger values of the `--uq-tolernace` parameter will
+allow the surrogate to be used more often. 
 1. _Increasing the temperature_: (Indirect) Will cause perturbations to be accepted more often,
-leading to a greater drift in the molecule position.
+leading to a greater drift in the molecule position and more likely the the inputs will
+be outside of the domain of applicability.
 1. _Increasing the perturbation size_: Use the ``--perturb`` flag to increase the amount
 the structure is changed at each step. Default is 0.01
 
-Logan intends the ability to add in control over the number of threads
-used by Psi4 as a simple way to control the runtime of the energy step.
+Ways to adjust accuracy of surrogate model:
+1. _Changing the maximum observation points_. Our model is build on Kernel methods, which
+means the model runtime increases linearly with the number of "observation points."
+The maximum number of observation points is fixed by ``--max-model-size``. 
+Increasing the numebr of points increases accuracy of the model at the expense 
+of longer runtimes.
+
 
 ## Logging Capabilities 
 
