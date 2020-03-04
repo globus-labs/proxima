@@ -83,7 +83,7 @@ if __name__ == "__main__":
         json.dump(host_info, fp, indent=2)
 
     # Initialize the ASE calculator
-    calc = Psi4(atoms=atoms, memory='500MB', **_fidelity[args.fidelity])
+    calc = Psi4(memory='500MB', **_fidelity[args.fidelity])
 
     # Make the LFA wrapper
     lfa_func = LFAEngine(calc.get_potential_energy, GAPSurrogate(args.max_model_size),
