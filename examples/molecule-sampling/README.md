@@ -70,10 +70,9 @@ The maximum number of observation points is fixed by ``--max-model-size``.
 Increasing the numebr of points increases accuracy of the model at the expense 
 of longer runtimes.
 
-
 ## Logging Capabilities 
 
-Thea application creates a new directory with runtime information
+The application creates a new directory with runtime information
 each time you invoke it.
 The directories are named after the start time and contain several files:
 
@@ -92,6 +91,19 @@ The directories are named after the start time and contain several files:
   can assess if differences are significant. 
 - `r_g.json`: Raw values of the radius of gyration. Useful if you want to do
   analysis beyond the coarse statistics in `result.json`
+  
+  ## Measuring Simulation Quality
+
+There are a few routes to measuring the quality of the simulation from the logging data:
+
+1. _Comparing True and Predicted Energies_: The `run_data.csv` model stores the output of the surrogate
+model and the actual function result. While not the target observable of the simulation, 
+you can compare these two values on-the-fly or afterwards
+to assess the quality of the surrogate. 
+2. _Comparing Output Observable_: The `result.json` file contains the final observable of the simulation.
+The quality of the simulation can be quantified by assessing how the "R_g" changes.
+Make sure to use the confidence intervals. The R_g is determined based on an average over
+the timesteps in the simulation and can have a large uncertainty.
 
 ## Implementation Details
 
