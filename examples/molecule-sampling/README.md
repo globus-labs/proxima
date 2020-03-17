@@ -61,7 +61,8 @@ allow the surrogate to be used more often.
 leading to a greater drift in the molecule position and more likely the the inputs will
 be outside of the domain of applicability.
 1. _Increasing the perturbation size_: Use the ``--perturb`` flag to increase the amount
-the structure is changed at each step. Default is 0.01
+the structure is changed at each step. Larger perturbations will be less likely to use
+the surrogate model, as they will be farther from training points. Default is 0.01
 
 Ways to adjust accuracy of surrogate model:
 1. _Changing the maximum observation points_. Our model is build on Kernel methods, which
