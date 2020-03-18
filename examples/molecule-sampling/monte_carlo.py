@@ -10,7 +10,7 @@ from ase.io.xyz import read_xyz
 from scipy.stats import bayes_mvs
 
 from proxima.decorator import LFAEngine
-from proxima.training import TrainingEngine
+from proxima.training import PeriodicRetrain
 from tqdm import tqdm
 
 from argparse import ArgumentParser
@@ -48,6 +48,9 @@ if __name__ == "__main__":
                             default=None, type=int)
     arg_parser.add_argument('--uq-tolerance', '-u', help='Larger tolerance values will use surrogates more often',
                             default=0.1, type=float)
+    arg_parser.add_argument('--retrain-interval', '-t', help='How often to retrain the model. Controls how many new '
+                                                             'data points are acquired before the model is retrained',
+                            default=1, type=int)
 
     # Parse the arguments
     args = arg_parser.parse_args()
@@ -88,7 +91,8 @@ if __name__ == "__main__":
     # Make the LFA wrapper
     lfa_func = LFAEngine(calc.get_potential_energy, GAPSurrogate(args.max_model_size),
                          DistanceBasedUQWithFeaturization(args.uq_tolerance),
-                         ASEDataStore(convert_to_pmg=False), TrainingEngine())
+                         ASEDataStore(convert_to_pmg=False),
+                         PeriodicRetrain(args.retrain_interval))
     calc.get_potential_energy = lfa_func
 
     # Compute a starting energy

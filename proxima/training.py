@@ -22,6 +22,23 @@ class TrainingEngine:
         return True
 
 
+class PeriodicRetrain(TrainingEngine):
+    """Retrain every certain number of requests"""
+
+    def __init__(self, interval: int):
+        super().__init__()
+        self.interval = interval
+        self._seen = 0
+
+    def request_update(self, learner: BaseInferenceEngine, data_source: BaseDataSource) -> bool:
+        self._seen += 1
+        if self._seen >= self.interval:
+            learner.retrain(data_source)
+            self._seen = 0
+            return True
+        return False
+
+
 class NeverRetrain(TrainingEngine):
     """Training engine that never re-trains the model"""
 

@@ -80,6 +80,9 @@ means the model runtime increases linearly with the number of "observation point
 The maximum number of observation points is fixed by ``--max-model-size``. 
 Increasing the numebr of points increases accuracy of the model at the expense 
 of longer runtimes.
+1. _Increasing the time between retraining_: The `--retrain-interval` sections controls how
+often the model is retrained. Increase it from the default of 1 (every time new data is 
+acquired) to make the model less accurate.
 
 ## Logging Capabilities 
 
