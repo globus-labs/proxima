@@ -25,6 +25,9 @@ are chosen](https://en.wikipedia.org/wiki/Monte_Carlo_method_in_statistical_phys
 the average over the timesteps represents a property
 for a simulation at the set temperature. 
 
+Our application computes the average radius of gyration of a molecule, 
+which should increase with temperature.
+
 Assessing the energy of a system is main computational cost
 of the energy evaluation.
 This implementation uses a quantum chemistry code, [Psi4](http://www.psicode.org/),
@@ -32,7 +35,7 @@ to evaluate the energy.
 It is currently hard-coded to use Density Functional Theory (DFT) for the energy
 evaluation.
 
-## Running the Application and Adjust Simulation Parameters
+## Running the Application and Adjusting Simulation Parameters
 
 The application is a serial application launched through the CLI:
 
@@ -106,7 +109,7 @@ The directories are named after the start time and contain several files:
 - `r_g.json`: Raw values of the radius of gyration. Useful if you want to do
   analysis beyond the coarse statistics in `result.json`
   
-  ## Measuring Simulation Quality
+ ## Measuring Simulation Quality
 
 There are a few routes to measuring the quality of the simulation from the logging data:
 
@@ -118,6 +121,21 @@ to assess the quality of the surrogate.
 The quality of the simulation can be quantified by assessing how the "R_g" changes.
 Make sure to use the confidence intervals. The R_g is determined based on an average over
 the timesteps in the simulation and can have a large uncertainty.
+
+
+## Recommended Parameters
+
+The `example-run.sh` performs a "baseline" run of the sampling code.
+The code does not use the surrogate model (as `--uq-tolerance` is less than zero)
+and samples enough steps to get a good measurement of the radius of gyration.
+The measurements are performed with "molecule #1" in our dataset at
+1K and 500K. 
+The code requires 40 minutes to run on an Intel 2550K and 
+produces the following values with a random seed of 1:
+
+- R<sub>g</sub> @ 1 K: 0.27256 &#x212b;
+- R<sub>g</sub> @ 1 K: 0.27369 &#x212b;
+
 
 ## Implementation Details
 
