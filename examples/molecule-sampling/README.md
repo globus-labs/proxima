@@ -2,6 +2,16 @@
 
 This demo application models a simple type of atomic scale simulation: Monte Carlo sampling.
 
+## Installation
+
+First, install the environment in the base directory of this repo:
+
+`conda env create --file environment.yml`
+
+Then update the environment with the YAML file in this folder:
+
+`conda env update --file update_environment.yml`
+
 ## Application Description
 
 Monte Carlo sampling works by computing the average property of an atomic system

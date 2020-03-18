@@ -1,0 +1,17 @@
+# Additional environment details for the monte carlo sampling application
+channels:
+  - conda-forge
+  - psi4
+  - defaults
+dependencies:
+  - pymatgen==2020.1.28
+  - scikit-learn==0.21.3
+  - matplotlib>3
+  - ase==3.19.0
+  - psi4
+  - pip
+  - pip:
+    - matminer==0.6.2
+    - dscribe==0.3.*
+    - python-git-info
+    - -e .
