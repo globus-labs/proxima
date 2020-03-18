@@ -134,7 +134,7 @@ The code requires 40 minutes to run on an Intel 2550K and
 produces the following values with a random seed of 1:
 
 - R<sub>g</sub> @ 1 K: 0.27256 &#x212b;
-- R<sub>g</sub> @ 1 K: 0.27369 &#x212b;
+- R<sub>g</sub> @ 500 K: 0.27369 &#x212b;
 
 
 ## Implementation Details
