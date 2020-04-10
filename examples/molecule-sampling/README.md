@@ -103,6 +103,12 @@ The directories are named after the start time and contain several files:
     - `surrogate`: Whether the surrogate was used
 - `host_info.json`: Information about what host was run on
 - `lfa_json.json`: Summary statistics of LFA performance
+    - `lfa_runs`: Number of times the surrogate model was invoked
+    - `lfa_time`: Total time spent running the surrogate model
+    - `uq_time`: Time spent assessing the surrogate model is appropriate
+    - `train_time`: Time spent re-training the surrogate model
+    - `target_runs`: Number of times the function being replaced was run
+    - `target_time`: Time spent running the target function
 - `result.json`: Output of the simulation code. Gives both the mean and 90%
   confidence intervals of the property (radius of gyration) so that you 
   can assess if differences are significant. 
