@@ -12,6 +12,17 @@ Then update the environment with the YAML file in this folder:
 
 `conda env update --file update_environment.yml`
 
+Next, install `quippy` in the `proxima` environment by:
+
+1. Activating the environment
+1. Downloading QUIP from GitHub (see [`libAtoms` docs](https://libatoms.github.io/GAP/installation.html))
+1. Get a copy of the GAP source code [from libAtoms](http://www.libatoms.org/gap/gap_download.html)
+1. Unpack the `GAP.tar` archive in the `./src/` directory of QUIP
+1. Compile and install the package following [`libAtoms`'s documentation](https://libatoms.github.io/GAP/installation.html#quick-start)
+    1. Ignore the "--user" flag for the `QUIPPY_INSTALL_OPTS`. You do not need to install in user mode because we have an isolated enviornment with Anaconda.
+    1. You will need to run `make install-quippy` to install the Python module
+1. Once complete, add `build/[your build directory]/fit_gap` to your path
+
 ## Application Description
 
 Monte Carlo sampling works by computing the average property of an atomic system
