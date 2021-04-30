@@ -84,9 +84,6 @@ class DistanceBasedUQWithFeaturization(BaseUQEngine):
         strc = AseAtomsAdaptor.get_molecule(X[0])
         features = self.cm.transform([strc])
         dists, _ = nn.kneighbors(features)
-        #import pdb; pdb.set_trace()
-        ##file_name = "/home/yzamora/proxima/examples/molecule-sampling/distances_" + "_uq_" + str(self.threshold) + "_p_" + str(self.perturb) + "_T_" + str(self.temp) + "_I_" + str(self.retrain_interval) + "_M_" + str(self.mol)+".out"
-        #import pdb; pdb.set_trace()
         distance = np.mean(dists, axis=1)[0]
         """with open (file_name,'a') as f:ß
             f.write("%f\n" % (distance) )"""
