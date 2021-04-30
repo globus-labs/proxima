@@ -84,7 +84,7 @@ class ScalableKernel(BaseEstimator, TransformerMixin):
             self.train_points = np.array(X)
         else:
             inds = np.random.choice(len(X), size=(self.max_points))
-            self.train_points = X[inds]
+            self.train_points = np.array(X)[inds]
         return self
 
     def fit_transform(self, X, y=None, **fit_params):
@@ -92,6 +92,7 @@ class ScalableKernel(BaseEstimator, TransformerMixin):
         return self.transform(X)
 
     def transform(self, X, y=None):
+        #import pdb; pdb.set_trace()
         K = np.zeros((len(X), len(self.train_points)))
         for i, x in enumerate(X):
             for j, tx in enumerate(self.train_points):

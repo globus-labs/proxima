@@ -47,7 +47,7 @@ if __name__ == "__main__":
     arg_parser.add_argument('--max-model-size', '-s', help='Maximum number of points to use in GAP surrogate model',
                             default=None, type=int)
     arg_parser.add_argument('--uq-tolerance', '-u', help='Larger tolerance values will use surrogates more often',
-                            default=0.1, type=float)
+                            default=0.5, type=float)
     arg_parser.add_argument('--retrain-interval', '-t', help='How often to retrain the model. Controls how many new '
                                                              'data points are acquired before the model is retrained',
                             default=1, type=int)
@@ -90,13 +90,13 @@ if __name__ == "__main__":
 
     # Make the LFA wrapper
     lfa_func = LFAEngine(calc.get_potential_energy, GAPSurrogate(args.max_model_size),
-                         DistanceBasedUQWithFeaturization(args.uq_tolerance),
-                         ASEDataStore(convert_to_pmg=False),
-                         PeriodicRetrain(args.retrain_interval))
+                         DistanceBasedUQWithFeaturization(args.uq_tolerance,args.perturb, args.temp, 1, args.mol),
+                         ASEDataStore(convert_to_pmg=False,max_size=None),
+                         PeriodicRetrain(args.retrain_interval),None, out_dir)
     calc.get_potential_energy = lfa_func
 
     # Compute a starting energy
-    energy = calc.get_potential_energy(atoms)
+    energy, true_new_energy, surrogate_energy = calc.get_potential_energy(atoms)
 
     # Function to compute the radius of gyration
     def radius_of_gyration(atoms: Atoms):
@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
             # Compute the energy
             calc.reset()
-            new_energy = calc.get_potential_energy(new_atoms)
+            new_energy, true_new_energy, surrogate_energy = calc.get_potential_energy(new_atoms)
             if lfa_func.did_last_call_use_surrogate():
                 true_new_energy = lfa_func.target_function(new_atoms)
             else:

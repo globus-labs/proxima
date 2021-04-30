@@ -37,6 +37,7 @@ class BaseInferenceEngine:
         raise NotImplementedError
 
 
+
 class ScikitLearnInferenceEngine(BaseInferenceEngine):
     """Inference engine built on top of a scikit-learn estimator"""
 
