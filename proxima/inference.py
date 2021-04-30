@@ -36,6 +36,11 @@ class BaseInferenceEngine:
         """
         raise NotImplementedError
 
+    def global_update(self):
+        """Parallel update of the "global" inference engine
+        """
+        raise NotImplementedError
+
 
 class ScikitLearnInferenceEngine(BaseInferenceEngine):
     """Inference engine built on top of a scikit-learn estimator"""

@@ -17,12 +17,13 @@ class ASEDataStore(InMemoryDataStorage):
     # TODO (wardlt): Should probably build in the "conversion" format into the LFAEngine
     #  The `AseAtomsAdaptor` class is used several different places in this code base
 
-    def __init__(self, convert_to_pmg=True):
+    def __init__(self, convert_to_pmg=True, max_size=None):
         """
         Args:
              convert_to_pmg (bool): Whether to convert the Atoms object to PMG before storing
         """
         self.convert_to_pmg = convert_to_pmg
+        self.max_size = max_size
         super().__init__()
 
     def transform(self, args: Tuple[Atoms]) -> Union[Atoms, Molecule]:
@@ -34,6 +35,8 @@ class ASEDataStore(InMemoryDataStorage):
     def add_pair(self, inputs, outputs):
         inputs = self.transform(inputs)
         super().add_pair(inputs, outputs)
+        if self.max_size and len(self) > self.max_size:
+            self.fifo_evict()
 
     def add_pairs(self, inputs, outputs):
         inputs = [self.transform(i) for i in inputs]

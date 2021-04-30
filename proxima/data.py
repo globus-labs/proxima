@@ -66,6 +66,15 @@ class InMemoryDataStorage(BaseDataSource):
         self.inputs.extend(inputs)
         self.outputs.extend(outputs)
 
+    def __len__(self):
+        return len(self.outputs)
+
+    """def fifo_evict(self):
+        self.inputs.pop(0)
+        self.outputs.pop(0)
+        self.inputs[20:]
+        self.outputs[20:]"""
+
     def get_all_data(self):
         return list(self.inputs), list(self.outputs)
 

@@ -20,7 +20,7 @@ class DistanceBasedUQWithFeaturization(BaseUQEngine):
     """An implementation of the distance based UQ that measures distances
     based on a featurized version of the structure"""
 
-    def __init__(self, threshold, min_entries=10, metric='minkowski', k=1, n_jobs=1):
+    def __init__(self, threshold,perturb, temp,retrain_interval,mol, min_entries=10, metric='minkowski', k=1, n_jobs=1):
         """Initialize the metric
         Args:
             threshold (float): Maximum distance for a prediction to be "trustable"
@@ -47,13 +47,27 @@ class DistanceBasedUQWithFeaturization(BaseUQEngine):
         self.k = k
         self.n_jobs = n_jobs
         self.nn_ = None
+        self.perturb = perturb
+        self.temp = temp
+        self.retrain_interval = retrain_interval
+        self.mol = mol
+        
+        
 
     def is_supported(self, model: BaseInferenceEngine,
                      training_data: ASEDataStore,
-                     X: Tuple[Atoms]):
+                     X: Tuple[Atoms],
+                     return_metric=False):
         # Check total count
-        if training_data.count() < self.min_entries:
-            return False
+        insufficient_data = training_data.count() < self.min_entries
+        if insufficient_data: # and return_metric is False:
+            if return_metric is False:
+                return False
+            elif return_metric is True and training_data.count() < 1:
+                return False, None
+
+        #elif training_data.count() < 1 and return_metric is True:
+        #    return False, None
 
         # Get the training points
         train_X, _ = training_data.get_all_data()
@@ -70,4 +84,16 @@ class DistanceBasedUQWithFeaturization(BaseUQEngine):
         strc = AseAtomsAdaptor.get_molecule(X[0])
         features = self.cm.transform([strc])
         dists, _ = nn.kneighbors(features)
-        return np.mean(dists, axis=1)[0] < self.threshold
+        #import pdb; pdb.set_trace()
+        ##file_name = "/home/yzamora/proxima/examples/molecule-sampling/distances_" + "_uq_" + str(self.threshold) + "_p_" + str(self.perturb) + "_T_" + str(self.temp) + "_I_" + str(self.retrain_interval) + "_M_" + str(self.mol)+".out"
+        #import pdb; pdb.set_trace()
+        distance = np.mean(dists, axis=1)[0]
+        """with open (file_name,'a') as f:ß
+            f.write("%f\n" % (distance) )"""
+
+        print("UQ:", distance < self.threshold, distance, self.threshold)
+
+        result = False if insufficient_data else distance < self.threshold
+        if return_metric:
+            return result, distance
+        return result

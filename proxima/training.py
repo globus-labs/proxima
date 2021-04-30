@@ -32,7 +32,7 @@ class PeriodicRetrain(TrainingEngine):
 
     def request_update(self, learner: BaseInferenceEngine, data_source: BaseDataSource) -> bool:
         self._seen += 1
-        if self._seen >= self.interval:
+        if self._seen >= self.interval or self._data_empty:
             learner.retrain(data_source)
             self._seen = 0
             return True
