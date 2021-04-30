@@ -20,8 +20,6 @@ from keras.wrappers.scikit_learn import KerasRegressor
 from keras.models import Sequential
 from keras.layers import Dense
 
-import torch
-import torchani
 
 from mcdemo.lfa.gap.skl import SOAPConverter, ScalableKernel
 
